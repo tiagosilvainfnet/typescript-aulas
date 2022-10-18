@@ -1,0 +1,17 @@
+{
+  "name": "aula_04",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "yarn tsc --build",
+    "watch": "yarn tsc --build --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "nodemon": "^2.0.20",
+    "typescript": "^4.8.4"
+  }
+}

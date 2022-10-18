@@ -1,0 +1,16 @@
+{
+  "name": "aula_01",
+  "version": "0.0.1",
+  "main": "index.js",
+  "license": "MIT",
+  "description": "Meu primeiro projeto typescript.",
+  "scripts": {
+    "build": "yarn tsc --build",
+    "watch": "yarn tsc --build --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Tiago Silva",
+  "devDependencies": {
+    "typescript": "^4.8.4"
+  }
+}
