@@ -12,6 +12,7 @@ import bcrypt from "bcrypt";
 
 import { auth } from './routes/auth';
 import hbs from 'hbs';
+import UserController from './controllers/UserController';
 
 const path = require('node:path');
 const mysqlStore = require('express-mysql-session')(session);
@@ -24,6 +25,9 @@ AdminJS.registerAdapter({
   Resource: AdminJSSequelize.Resource,
   Database: AdminJSSequelize.Database
 })
+
+
+const ROOT_DIR = __dirname;
 
 const generateResource = (model: object, hideElements: any = null, actions: any = null) => {
   return {
@@ -46,6 +50,8 @@ const generateResource = (model: object, hideElements: any = null, actions: any 
     }
   }
 }
+
+const userCtrl = new UserController(ROOT_DIR);
 
 const start = async () => {
   const adminOptions = {
@@ -78,7 +84,10 @@ const start = async () => {
                     if(request.payload.password){
                         request.payload.password = await bcrypt.hash(request.payload.password, 10)
                     }
-                    // TODO: Fazer envio de e-mail ao criar usuário
+                    request.payload.pin = (Math.floor(100000 + Math.random() * 900000)).toString();
+                    
+                    userCtrl.sendToken(request.payload.pin, request.payload.email, request.payload.name)
+                    
                     return request;
                 }
             },
@@ -134,10 +143,15 @@ const start = async () => {
                 }
             });
             if(user){
-                const verifica = await bcrypt.compare(password, user.getDataValue('password'));
-                if(verifica){
-                    return user;
+              const verifica = await bcrypt.compare(password, user.getDataValue('password'));
+              if(verifica){
+                if(user.active){
+                  return user;
+                }else{
+                  userCtrl.sendToken(user.pin, user.email, user.name)
+                  return false;
                 }
+              }
             }
             return false;
         },
@@ -157,9 +171,12 @@ const start = async () => {
         name: 'adminjs', 
     }
   );
+  
     app.use(express.json())
     hbs.registerPartials(path.join(__dirname, 'views'))
-    app.set('view engine', 'hbs');
+
+    app.set('view engine', '.hbs');
+
     app.use(admin.options.rootPath, adminRouter)
     
     app.use(bodyParser.urlencoded({ extended: true }));

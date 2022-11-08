@@ -1,6 +1,13 @@
 import { User } from '../model/user.entity';
+import Mail from '../utils/Mail';
 
 class UserController{
+    mail: Mail;
+
+    constructor(rootDir: string | null){
+        this.mail = new Mail(rootDir);
+    }
+
     public async confirmEmail(pin: string): Promise<any>{
         let result = {
             statusCode: 200,
@@ -31,8 +38,16 @@ class UserController{
         return result;
     }
 
-    public sendEmail(email: string): void{
-        // TODO: Criar envio de e-mail com token
+    public async sendToken(pin: string | null, email: string | null, name: string | null): Promise<any>{
+        try{
+        this.mail.sendEmail(email, 'Confirmação de e-mail', 'token-email', {
+            pin,
+            name,
+            url: `http://localhost:3000/auth/confirm-email`
+        })
+       }catch(err){
+        console.log(`Erro ao enviar e-mail ${err}`)
+       }
     }
 }
 
