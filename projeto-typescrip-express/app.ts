@@ -11,6 +11,8 @@ import { User } from './model/user.entity';
 import bcrypt from "bcrypt";
 
 import { auth } from './routes/auth';
+import { dashboard } from './routes/dashboard';
+
 import hbs from 'hbs';
 import UserController from './controllers/UserController';
 
@@ -142,17 +144,18 @@ const start = async () => {
                     email: email
                 }
             });
-            if(user){
-              const verifica = await bcrypt.compare(password, user.getDataValue('password'));
-              if(verifica){
-                if(user.active){
-                  return user;
-                }else{
-                  userCtrl.sendToken(user.pin, user.email, user.name)
-                  return false;
-                }
-              }
-            }
+            return user;
+            // if(user){
+            //   const verifica = await bcrypt.compare(password, user.getDataValue('password'));
+            //   if(verifica){
+            //     if(user.active){
+            //       return user;
+            //     }else{
+            //       userCtrl.sendToken(user.pin, user.email, user.name)
+            //       return false;
+            //     }
+            //   }
+            // }
             return false;
         },
         cookieName: 'adminjs',
@@ -181,6 +184,7 @@ const start = async () => {
     
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use("/auth", auth);
+    app.use("/dashboard", dashboard);
   
     app.listen(PORT, () => {
         console.log("Projeto rodando");
