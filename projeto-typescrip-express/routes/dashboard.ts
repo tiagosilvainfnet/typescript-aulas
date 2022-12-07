@@ -22,7 +22,7 @@ dashboard.get('/users/quantity', (req, res) => {
 dashboard.get('/orders/by-product', (req, res) => {
     res.statusCode = 200;
     res.json({
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ['Roupa 1', 'Roupa 2', 'Roupa 3', 'Roupa 4', 'Roupa 5', 'Roupa 6'],
         datasets: [
             {
             label: '# of Votes',
@@ -48,5 +48,21 @@ dashboard.get('/orders/by-product', (req, res) => {
         ],
     });
 });
+
+dashboard.get('/categories/best-sellers', (req, res) => {
+    res.statusCode = 200;
+    res.json({
+        labels: ['Categoria 1', 'Categoria 2', 'Categoria 3', 'Categoria 4', 'Categoria 5', 'Categoria 6'],
+        datasets: [
+          {
+            label: 'Categorias mais vendidas',
+            data: [2, 9, 3, 8, 7, 6],
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            borderColor: 'rgba(255, 99, 132, 1)',
+            borderWidth: 1,
+          },
+        ],
+      })
+})
 
 export { dashboard };

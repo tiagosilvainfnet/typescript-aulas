@@ -2,8 +2,9 @@ import AdminJS from 'adminjs';
 import AdminJSExpress from '@adminjs/express';
 import session from 'express-session';
 import express from 'express';
-import sequelize from './db';
+import { sequelize, mongooseDb } from './db';
 import * as AdminJSSequelize from '@adminjs/sequelize';
+import * as AdminJSMongoose from '@adminjs/mongoose'
 
 import { Category } from './model/category.entity';
 import { Product } from './model/product.entity';
@@ -15,6 +16,9 @@ import { dashboard } from './routes/dashboard';
 
 import hbs from 'hbs';
 import UserController from './controllers/UserController';
+import { ReportProduct } from './model/report_product';
+import { ReportUser } from './model/report_user.entity';
+import { ReportCategory } from './model/report_category.entity';
 
 const path = require('node:path');
 const mysqlStore = require('express-mysql-session')(session);
@@ -28,6 +32,10 @@ AdminJS.registerAdapter({
   Database: AdminJSSequelize.Database
 })
 
+AdminJS.registerAdapter({
+  Resource: AdminJSMongoose.Resource,
+  Database: AdminJSMongoose.Database
+})
 
 const ROOT_DIR = __dirname;
 
@@ -60,6 +68,9 @@ const start = async () => {
     resources: [
       generateResource(Product),
       generateResource(Category),
+      generateResource(ReportCategory),
+      generateResource(ReportProduct),
+      generateResource(ReportUser),
       generateResource(
         User, 
         {
@@ -122,6 +133,10 @@ const start = async () => {
   sequelize.sync()
     .then((result) => console.log(''))
     .catch((err) => console.log(err))
+
+  mongooseDb.once("open", () => {
+    console.log("Conexão ao aberta com sucesso");
+  })
 
   const admin = new AdminJS(adminOptions);
 

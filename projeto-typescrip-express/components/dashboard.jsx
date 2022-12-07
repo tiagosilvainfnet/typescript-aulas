@@ -5,15 +5,23 @@ import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
+    RadialLinearScale,
     BarElement,
     Title,
     Tooltip,
     Legend,
-    ArcElement  
+    LineElement,
+    ArcElement,
+    PointElement,
+    Filler,
   } from 'chart.js';
-  import { Bar, Pie } from 'react-chartjs-2';
+  import { Bar, Pie, Radar } from 'react-chartjs-2';
 
   ChartJS.register(
+    RadialLinearScale,
+    PointElement,
+    Filler,
+    LineElement,
     CategoryScale,
     LinearScale,
     BarElement,
@@ -49,22 +57,31 @@ export const optionsUsersQuantity = {
         text: 'Usuários por mês',
       },
     },
-  };
+};
+
+
 const fetcher = (...args) => fetch(...args).then(res => res.json())
 
 const Dashboard = () => {
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
-    const [selectDate, setSelectDate] = useState("all");
-    const { data: dataUsersQuantity } = useSWR('http://localhost:3000/dashboard/users/quantity', fetcher)
-    const { data: ordersByProduct } = useSWR('http://localhost:3000/dashboard/orders/by-product', fetcher)
-    
+    const [selectDate, setSelectDate] = useState("7");
+    const { data: dataUsersQuantity } = useSWR(`http://localhost:3000/dashboard/users/quantity?start_date=${startDate}&end_date=${endDate}&select_date=${selectDate}`, fetcher)
+    const { data: ordersByProduct } = useSWR(`http://localhost:3000/dashboard/orders/by-product?start_date=${startDate}&end_date=${endDate}&select_date=${selectDate}`, fetcher)
+    const { data: dataCategories } = useSWR(`http://localhost:3000/dashboard/categories/best-sellers?start_date=${startDate}&end_date=${endDate}&select_date=${selectDate}`, fetcher)
+
     useEffect(() => {
         if(selectDate !== 'custom'){
             setStartDate("");
             setEndDate("");
         }
     }, [selectDate])
+
+    useEffect(() => {
+        setTimeout(() => {
+            setId(2)
+        }, 5000)
+    })
 
     return <div className={'container-fluid'}>
                 <div style={{
@@ -93,7 +110,7 @@ const Dashboard = () => {
                         onChange={(event) => setSelectDate(event.target.value)}
                         >
                         <option value="all">Tudo</option>
-                        <option value="7">7 dias</option>
+                        <option value="7" selected>7 dias</option>
                         <option value="15">15 dias</option>
                         <option value="30">1 mês</option>
                         <option value="180">6 meses</option>
@@ -104,24 +121,45 @@ const Dashboard = () => {
                 <div>
                     <div style={col}>
                         <div style={item}>
-                            { dataUsersQuantity ?
-                            <Bar options={optionsUsersQuantity} data={dataUsersQuantity} /> 
+                        { ordersByProduct ?
+                             <Pie 
+                                width={300}
+                                height={300}
+                                data={ordersByProduct}
+                                options={{
+                                    maintainAspectRatio: false
+                                }} />
                             : "Não há dados para esse dashboard." }
                         </div>
                     </div>
                     <div style={col}>
                         <div style={item}>
-                        { ordersByProduct ?
-                             <Pie data={ordersByProduct} />
+                        { dataCategories ?
+                             <Radar 
+                                width={400}
+                                height={400}
+                                data={dataCategories}
+                                options={{
+                                    maintainAspectRatio: false
+                                }}
+                            />
                             : "Não há dados para esse dashboard." }
                         </div>
                     </div>
-                    <div style={col}>
-                        <div style={item}>3</div>
+                    <div style={{
+                        ...col,
+                        width: '100%'
+                    }}>
+                        <div style={item}>
+                            { dataUsersQuantity ?
+                            <Bar 
+                                options={optionsUsersQuantity} data={dataUsersQuantity} /> 
+                            : "Não há dados para esse dashboard." }
+                        </div>
                     </div>
-                    <div style={col}>
+                    {/* <div style={col}>
                         <div style={item}>4</div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
 }
