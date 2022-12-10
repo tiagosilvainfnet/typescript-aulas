@@ -1,32 +1,47 @@
 import * as express from "express";
-import faker from 'faker';
+import moment from 'moment';
+
+import ReportCategoryController from '../controllers/ReportCategoryController';
+import ReportProductController from '../controllers/ReportProductController';
+import ReportUserController from '../controllers/ReportUserController';
 
 const dashboard = express.Router();
 
-dashboard.get('/users/quantity', (req, res) => {
-    const labels: Array<string> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+dashboard.get('/users/quantity', async (req, res) => {
+
+    const reportUserCtrl = new ReportUserController();
+    const result = await reportUserCtrl.get(req.query);
+
+    const data = result.map((r: any) => r.sum);
+    let labels: any = result.map((r: any) => moment(r._id).format('DD/MM/YYYY'));
 
     res.statusCode = 200;
     res.json({
-        labels: labels,
+        labels,
         datasets: [
           {
             label: 'Usuários',
-            data: labels.map(() => faker.datatype.number({ min: 0, max: 1000 })),
+            data,
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
           }
         ]
     });
 });
 
-dashboard.get('/orders/by-product', (req, res) => {
+dashboard.get('/orders/by-product', async (req: any, res) => {
+  const reportProductCtrl = new ReportProductController();
+  const result = await reportProductCtrl.get(req.query);
+
+  const data = result.map((r: any) => r.sum);
+  const labels = result.map((r: any) => r._id);
+
     res.statusCode = 200;
     res.json({
-        labels: ['Roupa 1', 'Roupa 2', 'Roupa 3', 'Roupa 4', 'Roupa 5', 'Roupa 6'],
+        labels,
         datasets: [
             {
             label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
+            data,
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
@@ -49,14 +64,21 @@ dashboard.get('/orders/by-product', (req, res) => {
     });
 });
 
-dashboard.get('/categories/best-sellers', (req, res) => {
+dashboard.get('/categories/best-sellers', async (req: any, res) => {
+  const reportCategoryCtrl = new ReportCategoryController();
+  const result = await reportCategoryCtrl.get(req.query);
+
+  const data = result.map((r: any) => r.sum);
+  const labels = result.map((r: any) => r._id);
+
+  
     res.statusCode = 200;
     res.json({
-        labels: ['Categoria 1', 'Categoria 2', 'Categoria 3', 'Categoria 4', 'Categoria 5', 'Categoria 6'],
+        labels,
         datasets: [
           {
             label: 'Categorias mais vendidas',
-            data: [2, 9, 3, 8, 7, 6],
+            data,
             backgroundColor: 'rgba(255, 99, 132, 0.2)',
             borderColor: 'rgba(255, 99, 132, 1)',
             borderWidth: 1,

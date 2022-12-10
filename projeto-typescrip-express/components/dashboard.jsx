@@ -54,7 +54,7 @@ export const optionsUsersQuantity = {
       },
       title: {
         display: true,
-        text: 'Usuários por mês',
+        text: 'Usuários por dia',
       },
     },
 };
@@ -76,12 +76,6 @@ const Dashboard = () => {
             setEndDate("");
         }
     }, [selectDate])
-
-    useEffect(() => {
-        setTimeout(() => {
-            setId(2)
-        }, 5000)
-    })
 
     return <div className={'container-fluid'}>
                 <div style={{
@@ -114,7 +108,7 @@ const Dashboard = () => {
                         <option value="15">15 dias</option>
                         <option value="30">1 mês</option>
                         <option value="180">6 meses</option>
-                        <option value="360">1 ano</option>
+                        <option value="365">1 ano</option>
                         <option value="custom">Custom</option>
                     </select>
                 </div>

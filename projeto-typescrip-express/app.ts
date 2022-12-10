@@ -16,7 +16,7 @@ import { dashboard } from './routes/dashboard';
 
 import hbs from 'hbs';
 import UserController from './controllers/UserController';
-import { ReportProduct } from './model/report_product';
+import { ReportProduct } from './model/report_product.entity';
 import { ReportUser } from './model/report_user.entity';
 import { ReportCategory } from './model/report_category.entity';
 
